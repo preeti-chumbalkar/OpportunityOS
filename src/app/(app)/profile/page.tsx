@@ -2,31 +2,58 @@
 
 import { useState, useEffect } from 'react';
 import { User, Book, GraduationCap, MapPin, Target, Briefcase } from 'lucide-react';
-import { defaultProfile, Profile as ProfileType } from '@/data/profile';
+import { Profile as ProfileType, SkillLevel } from '@/data/profile';
+import { useProfile } from '@/context/ProfileContext';
 import styles from './profile.module.css';
 
 export default function Profile() {
-  const [profile, setProfile] = useState<ProfileType>(defaultProfile);
+  const { profile: globalProfile, setProfile: setGlobalProfile, resetProfile } = useProfile();
+  
+  const [profile, setProfile] = useState<ProfileType | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [saved, setSaved] = useState(false);
+  
+  const [newSkillName, setNewSkillName] = useState('');
+  const [newSkillLevel, setNewSkillLevel] = useState<SkillLevel>('Beginner');
 
   useEffect(() => {
-    const savedProfile = localStorage.getItem('oppOS_profile');
-    if (savedProfile) {
-      setProfile(JSON.parse(savedProfile));
+    if (globalProfile && !isEditing) {
+      setProfile(globalProfile);
     }
-  }, []);
+  }, [globalProfile, isEditing]);
 
   const handleSave = () => {
-    localStorage.setItem('oppOS_profile', JSON.stringify(profile));
-    setIsEditing(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    if (profile) {
+      setGlobalProfile(profile);
+      setIsEditing(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    }
   };
 
   const handleChange = (field: keyof ProfileType, value: any) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
+    if (!profile) return;
+    setProfile(prev => prev ? ({ ...prev, [field]: value }) : prev);
   };
+  
+  const removeSkill = (index: number) => {
+    if (!profile) return;
+    setProfile(prev => prev ? {
+      ...prev,
+      skills: prev.skills.filter((_, i) => i !== index)
+    } : prev);
+  };
+  
+  const addSkill = () => {
+    if (!profile || !newSkillName.trim()) return;
+    setProfile(prev => prev ? {
+      ...prev,
+      skills: [...prev.skills, { name: newSkillName.trim(), level: newSkillLevel }]
+    } : prev);
+    setNewSkillName('');
+  };
+
+  if (!profile) return null;
 
   return (
     <div className={styles.container}>
@@ -35,12 +62,13 @@ export default function Profile() {
           <h1 className={styles.title}>Your Profile</h1>
           <p className={styles.subtitle}>Keep this updated for the best AI matches.</p>
         </div>
-        <div>
+        <div style={{ display: 'flex', gap: '1rem' }}>
           {isEditing ? (
             <button className="btn btn-primary" onClick={handleSave}>Save Profile</button>
           ) : (
             <button className="btn btn-secondary" onClick={() => setIsEditing(true)}>Edit Profile</button>
           )}
+          <button className="btn btn-outline" onClick={resetProfile} style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}>Reset Profile</button>
         </div>
       </header>
 
@@ -140,10 +168,29 @@ export default function Profile() {
               <div key={index} className={styles.skillBadge}>
                 <span className={styles.skillName}>{skill.name}</span>
                 <span className={styles.skillLevel}>{skill.level}</span>
+                {isEditing && (
+                  <button onClick={() => removeSkill(index)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', marginLeft: '0.5rem' }}>×</button>
+                )}
               </div>
             ))}
+            
             {isEditing && (
-              <button className="btn btn-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}>+ Add Skill</button>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', width: '100%', alignItems: 'center' }}>
+                <input 
+                  type="text" 
+                  className="input" 
+                  placeholder="New skill (e.g. React)" 
+                  value={newSkillName}
+                  onChange={e => setNewSkillName(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <select className="input" value={newSkillLevel} onChange={e => setNewSkillLevel(e.target.value as SkillLevel)}>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+                <button className="btn btn-secondary" onClick={addSkill}>Add Skill</button>
+              </div>
             )}
           </div>
         </div>

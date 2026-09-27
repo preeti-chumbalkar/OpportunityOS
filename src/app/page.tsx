@@ -1,15 +1,26 @@
+"use client";
+
 import Link from 'next/link';
 import { ArrowRight, Zap, Target, Briefcase, GraduationCap } from 'lucide-react';
 import styles from './page.module.css';
+import { useProfile } from '@/context/ProfileContext';
 
 export default function Home() {
+  const { profile, loadDemoProfile } = useProfile();
+
   return (
     <div className={styles.container}>
       <nav className={styles.navbar}>
         <div className={styles.logo}>OpportunityOS</div>
         <div className={styles.navLinks}>
-          <Link href="/dashboard" className="btn btn-outline">See How It Works</Link>
-          <Link href="/dashboard" className="btn btn-primary">Try Demo Profile</Link>
+          {profile ? (
+            <Link href="/dashboard" className="btn btn-primary">Go to Dashboard</Link>
+          ) : (
+            <>
+              <button onClick={loadDemoProfile} className="btn btn-outline">Try Demo Profile</button>
+              <Link href="/onboarding" className="btn btn-primary">Create My Profile</Link>
+            </>
+          )}
         </div>
       </nav>
 
@@ -27,9 +38,15 @@ export default function Home() {
             AI-powered opportunity intelligence that helps students discover relevant opportunities — and become ready for them.
           </p>
           <div className={styles.ctaGroup}>
-            <Link href="/dashboard" className="btn btn-primary" style={{ padding: '0.8rem 1.5rem', fontSize: '1.1rem' }}>
-              Discover My Opportunities <ArrowRight size={20} />
-            </Link>
+            {profile ? (
+              <Link href="/discover" className="btn btn-primary" style={{ padding: '0.8rem 1.5rem', fontSize: '1.1rem' }}>
+                Discover My Opportunities <ArrowRight size={20} />
+              </Link>
+            ) : (
+              <Link href="/onboarding" className="btn btn-primary" style={{ padding: '0.8rem 1.5rem', fontSize: '1.1rem' }}>
+                Create Profile to Discover <ArrowRight size={20} />
+              </Link>
+            )}
           </div>
         </section>
 

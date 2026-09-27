@@ -5,11 +5,12 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, BrainCircuit, Rocket, Calendar, MapPin, Building, Activity, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { opportunities } from '@/data/opportunities';
-import { defaultProfile } from '@/data/profile';
 import { calculateMatchAndReadiness, MatchResult } from '@/utils/engine';
 import styles from './opportunity.module.css';
+import { useProfile } from '@/context/ProfileContext';
 
 export default function OpportunityDetail() {
+  const { profile } = useProfile();
   const { id } = useParams();
   const [opp, setOpp] = useState<typeof opportunities[0] | null>(null);
   const [match, setMatch] = useState<MatchResult | null>(null);
@@ -17,12 +18,13 @@ export default function OpportunityDetail() {
   const [insight, setInsight] = useState<any>(null);
 
   useEffect(() => {
+    if (!profile) return;
     const found = opportunities.find(o => o.id === id);
     if (found) {
       setOpp(found);
-      setMatch(calculateMatchAndReadiness(defaultProfile, found));
+      setMatch(calculateMatchAndReadiness(profile, found));
     }
-  }, [id]);
+  }, [id, profile]);
 
   const generateActionPlan = async () => {
     setLoading(true);
@@ -30,7 +32,7 @@ export default function OpportunityDetail() {
       const res = await fetch('/api/insight', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile: defaultProfile, opportunity: opp, matchResult: match })
+        body: JSON.stringify({ profile, opportunity: opp, matchResult: match })
       });
       const data = await res.json();
       setInsight(data);

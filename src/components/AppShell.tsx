@@ -3,10 +3,15 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Compass, CheckSquare, Target, User, Menu, X, BookMarked } from 'lucide-react';
 import { useState } from 'react';
 import styles from './AppShell.module.css';
+import { useProfile } from '@/context/ProfileContext';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { profile } = useProfile();
+  
+  const avatarChar = profile?.name ? profile.name.charAt(0).toUpperCase() : 'S';
+  const displayName = profile?.name || 'Student';
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -55,9 +60,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         
         <div className={styles.sidebarFooter}>
           <div className={styles.userSnippet}>
-            <div className={styles.avatar}>A</div>
+            <div className={styles.avatar}>{avatarChar}</div>
             <div className={styles.userInfo}>
-              <div className={styles.userName}>Aarav Sharma</div>
+              <div className={styles.userName}>{displayName}</div>
               <div className={styles.userRole}>Student</div>
             </div>
           </div>

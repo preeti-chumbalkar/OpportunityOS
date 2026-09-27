@@ -4,25 +4,27 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Bookmark, Clock, MapPin } from 'lucide-react';
 import { opportunities } from '@/data/opportunities';
-import { defaultProfile } from '@/data/profile';
 import { calculateMatchAndReadiness, MatchResult } from '@/utils/engine';
 import styles from '../discover/discover.module.css'; // Reusing discover styles
+import { useProfile } from '@/context/ProfileContext';
 
 export default function MyMatches() {
+  const { profile } = useProfile();
   const [results, setResults] = useState<(typeof opportunities[0] & MatchResult)[]>([]);
   const [tab, setTab] = useState('All');
 
   useEffect(() => {
+    if (!profile) return;
     const scored = opportunities.map(opp => ({
       ...opp,
-      ...calculateMatchAndReadiness(defaultProfile, opp)
+      ...calculateMatchAndReadiness(profile, opp)
     }));
     
     // Sort by match score
     scored.sort((a, b) => b.matchScore - a.matchScore);
     
     setResults(scored);
-  }, []);
+  }, [profile]);
 
   const filtered = results.filter(r => {
     if (tab === 'High Match') return r.matchScore >= 80;

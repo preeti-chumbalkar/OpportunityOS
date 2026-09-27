@@ -4,25 +4,27 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, Filter, BookmarkPlus, Clock, MapPin } from 'lucide-react';
 import { opportunities } from '@/data/opportunities';
-import { defaultProfile } from '@/data/profile';
 import { calculateMatchAndReadiness, MatchResult } from '@/utils/engine';
 import styles from './discover.module.css';
+import { useProfile } from '@/context/ProfileContext';
 
 export default function Discover() {
+  const { profile } = useProfile();
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<(typeof opportunities[0] & MatchResult)[]>([]);
 
   useEffect(() => {
+    if (!profile) return;
     const scored = opportunities.map(opp => ({
       ...opp,
-      ...calculateMatchAndReadiness(defaultProfile, opp)
+      ...calculateMatchAndReadiness(profile, opp)
     }));
     
     // Sort by priority score
     scored.sort((a, b) => b.priorityScore - a.priorityScore);
     
     setResults(scored);
-  }, []);
+  }, [profile]);
 
   const filtered = results.filter(r => 
     r.title.toLowerCase().includes(search.toLowerCase()) || 
