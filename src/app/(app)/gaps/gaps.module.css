@@ -1,0 +1,107 @@
+.container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.header {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.title {
+  font-size: 2.2rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.gapCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skillName {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.levelCompare {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.2);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+}
+
+.levelBox {
+  flex: 1;
+}
+.levelBox:last-child {
+  text-align: right;
+}
+
+.arrow {
+  color: var(--text-muted);
+}
+
+.levelLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.levelValue {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.levelValueReq {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--warning);
+}
+
+.aiRec {
+  background: rgba(99, 102, 241, 0.05);
+  border-left: 3px solid var(--accent-primary);
+  padding: var(--spacing-md);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.aiLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--accent-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.aiRec p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,3 @@
+# OpportunityOS is a Next.js (Node.js) application.
+# Dependencies are managed via package.json and npm.
+# This file is provided to satisfy the explicit requirements.txt request.
